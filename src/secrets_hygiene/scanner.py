@@ -75,9 +75,9 @@ def find_risky_files(paths: list[Path]) -> list[dict]:
                     "recommendation": "Move secrets to a secure vault and ensure secret files are not committed to source control.",
                 }
             )
-TEXT_EXT_ALLOWLIST = {
-    ".txt", ".md", ".py", ".ps1", ".psm1", ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".env"
-}
+
+    return findings
+
 
 
 def _is_probably_text(path: Path) -> bool:
