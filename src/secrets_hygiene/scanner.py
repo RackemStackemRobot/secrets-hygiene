@@ -38,6 +38,10 @@ RISKY_EXTENSIONS = {
     ".kdbx",
 }
 
+TEXT_EXT_ALLOWLIST = {
+    ".txt", ".md", ".py", ".ps1", ".psm1", ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".env"
+}
+
 
 def _should_ignore_dir(dirname: str) -> bool:
     return dirname in DEFAULT_IGNORE_DIRS
@@ -121,5 +125,3 @@ def find_pattern_matches(paths: list[Path]) -> list[dict]:
     for p in paths:
         all_findings.extend(scan_file_for_patterns(p))
     return all_findings
-
-    return findings
