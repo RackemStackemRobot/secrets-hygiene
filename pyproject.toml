@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secrets-hygiene"
+version = "0.1.0"
+description = "Defensive scanner for accidental secrets and risky files. Outputs JSON/Markdown reports."
+requires-python = ">=3.10"
+
+[project.scripts]
+secrets-hygiene = "secrets_hygiene.main:main"
