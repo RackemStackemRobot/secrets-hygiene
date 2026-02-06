@@ -4,7 +4,7 @@ import argparse
 import json
 from datetime import datetime, timezone
 
-from secrets_hygiene.scanner import find_risky_files, walk_files
+from secrets_hygiene.scanner import find_pattern_matches, find_risky_files, walk_files
 
 
 def main() -> None:
@@ -13,7 +13,10 @@ def main() -> None:
     args = parser.parse_args()
 
     paths = walk_files(args.path)
-    findings = find_risky_files(paths)
+    findings = []
+    findings.extend(find_risky_files(paths))
+    findings.extend(find_pattern_matches(paths))
+
 
     report = {
         "meta": {
