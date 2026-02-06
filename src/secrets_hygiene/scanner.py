@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from secrets_hygiene.patterns import RULES, mask_match
 
 
 DEFAULT_IGNORE_DIRS = {
@@ -74,5 +75,51 @@ def find_risky_files(paths: list[Path]) -> list[dict]:
                     "recommendation": "Move secrets to a secure vault and ensure secret files are not committed to source control.",
                 }
             )
+TEXT_EXT_ALLOWLIST = {
+    ".txt", ".md", ".py", ".ps1", ".psm1", ".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".env"
+}
+
+
+def _is_probably_text(path: Path) -> bool:
+    ext = path.suffix.lower()
+    return ext in TEXT_EXT_ALLOWLIST or path.name.startswith(".env")
+
+
+def scan_file_for_patterns(path: Path, max_bytes: int = 200_000) -> list[dict]:
+    findings: list[dict] = []
+
+    if not _is_probably_text(path):
+        return findings
+
+    try:
+        # Read a capped amount to avoid huge files
+        data = path.read_bytes()[:max_bytes]
+        text = data.decode(errors="ignore")
+    except Exception:
+        return findings
+
+    for rule in RULES:
+        for m in rule.regex.finditer(text):
+            raw = m.group(0)
+            findings.append(
+                {
+                    "type": "pattern_match",
+                    "rule_id": rule.id,
+                    "title": rule.title,
+                    "severity": rule.severity,
+                    "path": str(path),
+                    "evidence": {"match_masked": mask_match(raw)},
+                    "recommendation": "Rotate the exposed secret, remove it from code, and store it in a secret manager or vault.",
+                }
+            )
+
+    return findings
+
+
+def find_pattern_matches(paths: list[Path]) -> list[dict]:
+    all_findings: list[dict] = []
+    for p in paths:
+        all_findings.extend(scan_file_for_patterns(p))
+    return all_findings
 
     return findings
