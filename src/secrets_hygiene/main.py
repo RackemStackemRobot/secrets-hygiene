@@ -12,8 +12,8 @@ def build_report(target: str) -> dict:
     paths = walk_files(target)
 
     findings: list[dict] = []
-    findings.extend(find_risky_files(paths))
-    findings.extend(find_pattern_matches(paths))
+    findings.extend(find_risky_files(paths) or [])
+    findings.extend(find_pattern_matches(paths) or [])
 
     return {
         "meta": {
